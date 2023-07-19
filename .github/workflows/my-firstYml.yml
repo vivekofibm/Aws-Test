@@ -1,0 +1,47 @@
+name: My First GitHub Actions
+
+on: [push]
+
+jobs:
+
+      build:
+        runs-on: ubuntu-latest
+    
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+    
+          - name: Build application
+            run: |
+                echo "this is build stage"
+    
+      test:
+        needs: build
+        runs-on: ubuntu-latest
+    
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+    
+          - name: Install dependencies
+            run: |
+              echo "this is installing the dependencies"
+    
+          - name: Run tests
+            run: |
+              echo "this is running the test"
+              ls
+    
+      deploy:
+        needs: test
+        runs-on: ubuntu-latest
+    
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+    
+          - name: Deploy application
+            run: |
+                echo "this is deployment"
+                pwd
+    
