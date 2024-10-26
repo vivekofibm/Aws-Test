@@ -1,4 +1,4 @@
-nname: My First GitHub Actions
+name: My First GitHub Actions
 
 on:
   workflow_dispatch: {}
