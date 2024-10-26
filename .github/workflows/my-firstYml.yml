@@ -28,7 +28,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2IP }} << 'EOF'
             # Clone the private repo on EC2 instance using PAT
-            git clone https://${{ env.pat }}@github.com/vivekofibm/Aws-Test.git .
+            git clone https://${{ env.pat }}@github.com/vivekofibm/Aws-Test.git /home/ubuntu/
           EOF
 
           # - name: Clone Repository on EC2 using PAT
