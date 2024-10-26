@@ -1,6 +1,5 @@
-name: My First GitHub Actions
+nname: My First GitHub Actions
 
-# on: [push]
 on:
   workflow_dispatch: {}
   push:
@@ -8,49 +7,69 @@ on:
       - 'aws-conn'
 
 env:
-  acessKey: ${{ secrets.AWS_ACESS_KEY }}
-  secretKey: ${{ secrets.AWS_SECRET_KEY }}
+  sshKey: ${{ secrets.EC2_SSH_KEY }}
+  ec2IP: ${{ secrets.EC2_PUBLIC_IP }}
+  pat: ${{ secrets.GH_PAT }}
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
 
-      build:
-        runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ env.sshKey }}
+      
+      - name: Clone Repository on EC2 using PAT
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2IP }} << 'EOF'
+            # Clone the private repo on EC2 instance using PAT
+            git clone https://${{ env.pat }}@github.com/vivekofibm/Aws-Test.git .
+          EOF
+
+          # - name: Clone Repository on EC2 using PAT
+          #   run: |
+          #     ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          #       # Clone the private repo on EC2 instance using PAT
+          #       git clone https://${{ secrets.GH_PAT }}@github.com/your-username/your-private-repo.git /path/to/clone/location
+          #     EOF
+
     
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v2
+      #     - name: Build application
+      #       run: |
+      #           echo "this is build stage"
     
-          - name: Build application
-            run: |
-                echo "this is build stage"
+      # test:
+      #   needs: build
+      #   runs-on: ubuntu-latest
     
-      test:
-        needs: build
-        runs-on: ubuntu-latest
+      #   steps:
+      #     - name: Checkout repository
+      #       uses: actions/checkout@v2
     
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v2
+      #     - name: Install dependencies
+      #       run: |
+      #         echo "this is installing the dependencies"
     
-          - name: Install dependencies
-            run: |
-              echo "this is installing the dependencies"
+      #     - name: Run tests
+      #       run: |
+      #         echo "this is running the test"
+      #         ls
     
-          - name: Run tests
-            run: |
-              echo "this is running the test"
-              ls
+      # deploy:
+      #   needs: test
+      #   runs-on: ubuntu-latest
     
-      deploy:
-        needs: test
-        runs-on: ubuntu-latest
+      #   steps:
+      #     - name: Checkout repository
+      #       uses: actions/checkout@v2
     
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v2
-    
-          - name: Deploy application
-            run: |
-                echo "this is deployment"
-                pwd
+      #     - name: Deploy application
+      #       run: |
+      #           echo "this is deployment"
+      #           pwd
     
